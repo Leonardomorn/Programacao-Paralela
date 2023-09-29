@@ -29,12 +29,12 @@ int present (int town, int depth, int *path) {
     return 0;
 }
 
-void tsp (int depth, int current_length, int *path) {
+void tsp (int depth, int current_length, int **path) {
     int i;
     if (current_length >= min_distance) return;
     if (depth == nb_towns)
     {
-        current_length += dist_to_origin[path[nb_towns - 1]];
+        current_length += dist_to_origin[path[omp_get_thread_num()][nb_towns - 1]];
         if (current_length < min_distance)
             min_distance = current_length;
     } 
@@ -42,15 +42,15 @@ void tsp (int depth, int current_length, int *path) {
     else 
     {
         int town, me, dist;
-        me = path[depth - 1];
+        me = path[omp_get_thread_num()][depth - 1];
         
         if(iter < 2)
         {
             #pragma omp parallel for
             for (i = 0; i < nb_towns; i++) {
                 town = d_matrix[me][i].to_town;
-                if (!present (town, depth, path)) {
-                    path[depth] = town;
+                if (!present (town, depth, path[omp_get_thread_num()])) {
+                    path[omp_get_thread_num()][depth] = town;
                     dist = d_matrix[me][i].dist;
                     tsp (depth + 1, current_length + dist, path);
                 }            
@@ -61,8 +61,8 @@ void tsp (int depth, int current_length, int *path) {
         {
             for (i = 0; i < nb_towns; i++) {
                 town = d_matrix[me][i].to_town;
-                if (!present (town, depth, path)) {
-                    path[depth] = town;
+                if (!present (town, depth, path[omp_get_thread_num()])) {
+                    path[omp_get_thread_num()][depth] = town;
                     dist = d_matrix[me][i].dist;
                     tsp (depth + 1, current_length + dist, path);
                 }            
@@ -137,27 +137,80 @@ void init_tsp() {
         st = scanf("%u %u", x + i, y + i);
         if (st != 2) exit(1);
     }
+
     
     greedy_shortest_first_heuristic(x, y);
+
+/****Imprime a matriz de distâncias para melhor compreensão do que o greedy shortest first faz*/    
+/*/
+    printf("\nImprimindo a matriz de distâncias \n");
+    printf("|tt |   dist   ||tt |   dist   ||tt |   dist   |\n");
+    for (int a = 0; a < nb_towns; a++)
+    {
+        for (int b = 0; b < nb_towns; b++)
+        {
+            printf(" %d   %.10d  ", d_matrix[a][b].to_town, d_matrix[a][b].dist );
+
+        }
+        
+        printf("\n");
+    }
     
+    
+    printf("\nImprimindo distancias a origem \n");
+    for (int a = 0; a < nb_towns; a++)
+    {
+        printf(" %d  ", dist_to_origin[a] );
+
+        
+    }
+        printf("\n");
+
+*/
     free(x);
     free(y);
 }
 
 int run_tsp() {
-    int i, *path;
+    int i, *path, **a_path;
 
     init_tsp();
     
     path = (int*) malloc(sizeof(int) * nb_towns);
     path[0] = 0;
+
+
+/*** a_path criação*/
+    a_path = malloc ( omp_get_max_threads() * sizeof(int*));
+    a_path[0] = malloc (omp_get_max_threads() * nb_towns * sizeof(int));
+
+    for ( i = 1; i < omp_get_max_threads(); i++)
+    {
+        a_path[i] = a_path[0] + i * nb_towns;
+    }
+
+    for (i = 0; i < omp_get_max_threads(); i++)
+    {
+        for (int j = 0; j < nb_towns; j++)
+        {
+            a_path[i][j] = 0;
+        }
+        
+    }
+   /*** a_path criação*/
+ 
     
-    tsp (1, 0, path);
+    
+    tsp (1, 0, a_path);
 
     free(path);
     for (i = 0; i < nb_towns; i++)
         free(d_matrix[i]);
     free(d_matrix);
+
+    /*** a_path liberação*/
+    free(a_path[0]); free (a_path);
+    /*** a_path liberação*/
 
     return min_distance;
 }
