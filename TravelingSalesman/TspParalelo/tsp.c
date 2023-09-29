@@ -22,15 +22,14 @@ typedef struct {
 d_info **d_matrix;
 int *dist_to_origin;
 
-int present (int town, int depth, int *path) {
+int present (int town, int depth, int **path) {
     int i;
     for (i = 0; i < depth; i++)
-        if (path[i] == town) return 1;
+        if (path[omp_get_thread_num()][i] == town) return 1;
     return 0;
 }
 
 void tsp (int depth, int current_length, int **path) {
-    int i;
     if (current_length >= min_distance) return;
     if (depth == nb_towns)
     {
@@ -42,14 +41,15 @@ void tsp (int depth, int current_length, int **path) {
     else 
     {
         int town, me, dist;
+        printf("a thread é %d\n", omp_get_thread_num());
         me = path[omp_get_thread_num()][depth - 1];
         
         if(iter < 2)
         {
-            #pragma omp parallel for
-            for (i = 0; i < nb_towns; i++) {
+            #pragma omp parallel for num_threads(2) firstprivate (me, depth) private(dist, town)
+            for (int i = 0; i < nb_towns; i++) {
                 town = d_matrix[me][i].to_town;
-                if (!present (town, depth, path[omp_get_thread_num()])) {
+                if (!present (town, depth, path)) {
                     path[omp_get_thread_num()][depth] = town;
                     dist = d_matrix[me][i].dist;
                     tsp (depth + 1, current_length + dist, path);
@@ -59,9 +59,9 @@ void tsp (int depth, int current_length, int **path) {
         }
         else
         {
-            for (i = 0; i < nb_towns; i++) {
+            for (int i = 0; i < nb_towns; i++) {
                 town = d_matrix[me][i].to_town;
-                if (!present (town, depth, path[omp_get_thread_num()])) {
+                if (!present (town, depth, path)) {
                     path[omp_get_thread_num()][depth] = town;
                     dist = d_matrix[me][i].dist;
                     tsp (depth + 1, current_length + dist, path);
@@ -167,6 +167,8 @@ void init_tsp() {
         printf("\n");
 
 */
+
+    printf("\n Distância mínima é: %d\n", min_distance);
     free(x);
     free(y);
 }
@@ -175,21 +177,24 @@ int run_tsp() {
     int i, *path, **a_path;
 
     init_tsp();
-    
+
+//não estou utilizando path pois é impossível privatizar em paralelo um vetor alocado dinamicamente 
+/*    
     path = (int*) malloc(sizeof(int) * nb_towns);
     path[0] = 0;
-
+*/
 
 /*** a_path criação*/
-    a_path = malloc ( omp_get_max_threads() * sizeof(int*));
-    a_path[0] = malloc (omp_get_max_threads() * nb_towns * sizeof(int));
+// no teste de mesa max threads são convertidos para 2 para melhor compreensão
+    a_path = malloc ( 2 * sizeof(int*));
+    a_path[0] = malloc (2 * nb_towns * sizeof(int));
 
-    for ( i = 1; i < omp_get_max_threads(); i++)
+    for ( i = 1; i < 2; i++)
     {
         a_path[i] = a_path[0] + i * nb_towns;
     }
 
-    for (i = 0; i < omp_get_max_threads(); i++)
+    for (i = 0; i < 2; i++)
     {
         for (int j = 0; j < nb_towns; j++)
         {
