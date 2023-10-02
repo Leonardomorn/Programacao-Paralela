@@ -12,7 +12,7 @@
     
 int min_distance;
 int nb_towns;
-int iter = -1;
+int iter = 0;
 
 typedef struct {
     int to_town;
@@ -41,13 +41,14 @@ void tsp (int depth, int current_length, int **path) {
     else 
     {
         int town, me, dist;
-        printf("a thread é %d\n", omp_get_thread_num());
-        me = path[omp_get_thread_num()][depth - 1];
+        // printf("a thread é %d\n", omp_get_thread_num());
         
-        if(iter < 2)
+        if(iter < 1 )
         {
-            #pragma omp parallel for num_threads(2) firstprivate (me, depth) private(dist, town)
-            for (int i = 0; i < nb_towns; i++) {
+            #pragma omp parallel for firstprivate (depth, current_length) private(dist, town, me)
+            for (int i = 0; i < nb_towns; i++)
+            {
+                me = path[omp_get_thread_num()][depth - 1];
                 town = d_matrix[me][i].to_town;
                 if (!present (town, depth, path)) {
                     path[omp_get_thread_num()][depth] = town;
@@ -59,7 +60,9 @@ void tsp (int depth, int current_length, int **path) {
         }
         else
         {
-            for (int i = 0; i < nb_towns; i++) {
+            for (int i = 0; i < nb_towns; i++) 
+            {
+                me = path[omp_get_thread_num()][depth - 1];
                 town = d_matrix[me][i].to_town;
                 if (!present (town, depth, path)) {
                     path[omp_get_thread_num()][depth] = town;
@@ -185,16 +188,15 @@ int run_tsp() {
 */
 
 /*** a_path criação*/
-// no teste de mesa max threads são convertidos para 2 para melhor compreensão
-    a_path = malloc ( 2 * sizeof(int*));
-    a_path[0] = malloc (2 * nb_towns * sizeof(int));
+    a_path = malloc ( omp_get_max_threads() * sizeof(int*));
+    a_path[0] = malloc (omp_get_max_threads() * nb_towns * sizeof(int));
 
-    for ( i = 1; i < 2; i++)
+    for ( i = 1; i < omp_get_max_threads(); i++)
     {
         a_path[i] = a_path[0] + i * nb_towns;
     }
 
-    for (i = 0; i < 2; i++)
+    for (i = 0; i < omp_get_max_threads(); i++)
     {
         for (int j = 0; j < nb_towns; j++)
         {
