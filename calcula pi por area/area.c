@@ -2,6 +2,7 @@
 #include <omp.h>
 
 static long num_steps = 100000;
+double pi = 0;
 double step;
 
 double main()
@@ -26,7 +27,8 @@ double main()
             x = (i + 0.5) * step;
             sum = sum + 4.0 / (1.0 + x*x);
         }
-        sum_array[ID] = sum;
+        #pragma omp critical  
+        pi += sum * step;
     }
         break;
     case 1:
@@ -37,7 +39,8 @@ double main()
             x = (i + 0.5) * step;
             sum = sum + 4.0 / (1.0 + x*x);
         }
-        sum_array[ID] = sum;       
+        #pragma omp critical
+        pi += sum * step;
     }
         break;
     case 2:
@@ -48,7 +51,8 @@ double main()
             x = (i + 0.5) * step;
             sum = sum + 4.0 / (1.0 + x*x);
         }
-        sum_array[ID] = sum;       
+        #pragma omp critical
+        pi += sum * step;
     }
         break;
     case 3:
@@ -59,7 +63,8 @@ double main()
             x = (i + 0.5) * step;
             sum = sum + 4.0 / (1.0 + x*x);
         }
-        sum_array[ID] = sum;       
+        #pragma omp critical
+        pi += sum * step;
     }
         break;
     default:
@@ -68,8 +73,7 @@ double main()
 
 	}
 
-    pi = step * (sum_array[0] + sum_array[1] + sum_array[2]+ sum_array[3] ); 
-    return pi;
+    printf("\n O pi paralelo é: %f\n", pi);
 
 		
 }
