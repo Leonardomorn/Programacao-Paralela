@@ -57,7 +57,7 @@ void tsp (int depth, int current_length, int **path) {
                     path[omp_get_thread_num()][depth] = town;
                     dist = d_matrix[me][i].dist;
                     tsp (depth + 1, current_length + dist, path);
-                }  
+                }   
                 }
           
             }   
