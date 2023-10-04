@@ -45,16 +45,21 @@ void tsp (int depth, int current_length, int **path) {
         
         if(iter < 1 )
         {
-            #pragma omp parallel for firstprivate (depth, current_length) private(dist, town, me)
+            #pragma omp parallel for firstprivate (depth, current_length) private(dist, town, me) shared(path)
             for (int i = 0; i < nb_towns; i++)
             {
+                if(!(omp_get_thread_num() > 1))
+                {
                 me = path[omp_get_thread_num()][depth - 1];
+
                 town = d_matrix[me][i].to_town;
                 if (!present (town, depth, path)) {
                     path[omp_get_thread_num()][depth] = town;
                     dist = d_matrix[me][i].dist;
                     tsp (depth + 1, current_length + dist, path);
-                }            
+                }  
+                }
+          
             }   
             iter++;
         }
