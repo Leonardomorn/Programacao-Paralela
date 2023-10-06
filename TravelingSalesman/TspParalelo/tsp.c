@@ -9,6 +9,7 @@
 #include <limits.h>
 #include <math.h>
 #include <omp.h>
+#include <string.h>
     
 int min_distance;
 int nb_towns;
@@ -22,20 +23,23 @@ typedef struct {
 d_info **d_matrix;
 int *dist_to_origin;
 
-int present (int town, int depth, int **path) {
+int present (int town, int depth, int *path) {
     int i;
     for (i = 0; i < depth; i++)
-        if (path[omp_get_thread_num()][i] == town) return 1;
+        if (path[i] == town) return 1;
     return 0;
 }
 
-void tsp (int depth, int current_length, int **path) {
+void tsp (int depth, int current_length, int *path) {
     if (current_length >= min_distance) return;
     if (depth == nb_towns)
     {
-        current_length += dist_to_origin[path[omp_get_thread_num()][nb_towns - 1]];
+        {
+        current_length += dist_to_origin[path[nb_towns - 1]];
+        #pragma omp critical
         if (current_length < min_distance)
             min_distance = current_length;
+        }
     } 
 
     else 
@@ -45,21 +49,24 @@ void tsp (int depth, int current_length, int **path) {
         
         if(iter < 1 )
         {
-            #pragma omp parallel for firstprivate (depth, current_length) private(dist, town, me) shared(path)
+            #pragma omp parallel for firstprivate (depth, current_length) private(dist, town, me)
             for (int i = 0; i < nb_towns; i++)
             {
-                if(!(omp_get_thread_num() > 1))
+                int *path_aux = (int*) malloc(sizeof(int) * nb_towns);
+                memcpy(path_aux, path, sizeof(int)*nb_towns);
                 {
-                me = path[omp_get_thread_num()][depth - 1];
+                me = path_aux[depth - 1];
 
                 town = d_matrix[me][i].to_town;
-                if (!present (town, depth, path)) {
-                    path[omp_get_thread_num()][depth] = town;
+                if (!present (town, depth, path_aux)) {
+                    path_aux[depth] = town;
                     dist = d_matrix[me][i].dist;
-                    tsp (depth + 1, current_length + dist, path);
+                    tsp (depth + 1, current_length + dist, path_aux);
+                    printf("\nnão são recursões infinitas");
                 }   
                 }
           
+                    free(path_aux);
             }   
             iter++;
         }
@@ -67,10 +74,10 @@ void tsp (int depth, int current_length, int **path) {
         {
             for (int i = 0; i < nb_towns; i++) 
             {
-                me = path[omp_get_thread_num()][depth - 1];
+                me = path[depth - 1];
                 town = d_matrix[me][i].to_town;
                 if (!present (town, depth, path)) {
-                    path[omp_get_thread_num()][depth] = town;
+                    path[depth] = town;
                     dist = d_matrix[me][i].dist;
                     tsp (depth + 1, current_length + dist, path);
                 }            
@@ -174,55 +181,30 @@ void init_tsp() {
     }
         printf("\n");
 
-*/
 
     printf("\n Distância mínima é: %d\n", min_distance);
+*/
     free(x);
     free(y);
 }
 
 int run_tsp() {
-    int i, *path, **a_path;
+    int i, *path;
 
     init_tsp();
 
-//não estou utilizando path pois é impossível privatizar em paralelo um vetor alocado dinamicamente 
-/*    
+
     path = (int*) malloc(sizeof(int) * nb_towns);
     path[0] = 0;
-*/
-
-/*** a_path criação*/
-    a_path = malloc ( omp_get_max_threads() * sizeof(int*));
-    a_path[0] = malloc (omp_get_max_threads() * nb_towns * sizeof(int));
-
-    for ( i = 1; i < omp_get_max_threads(); i++)
-    {
-        a_path[i] = a_path[0] + i * nb_towns;
-    }
-
-    for (i = 0; i < omp_get_max_threads(); i++)
-    {
-        for (int j = 0; j < nb_towns; j++)
-        {
-            a_path[i][j] = 0;
-        }
-        
-    }
-   /*** a_path criação*/
  
     
     
-    tsp (1, 0, a_path);
+    tsp (1, 0, path);
 
     free(path);
     for (i = 0; i < nb_towns; i++)
         free(d_matrix[i]);
     free(d_matrix);
-
-    /*** a_path liberação*/
-    free(a_path[0]); free (a_path);
-    /*** a_path liberação*/
 
     return min_distance;
 }
