@@ -62,7 +62,7 @@ void tsp (int depth, int current_length, int *path) {
                     path_aux[depth] = town;
                     dist = d_matrix[me][i].dist;
                     tsp (depth + 1, current_length + dist, path_aux);
-                    printf("\nnão são recursões infinitas");
+                    
                 }   
                 }
           
@@ -156,34 +156,6 @@ void init_tsp() {
     
     greedy_shortest_first_heuristic(x, y);
 
-/****Imprime a matriz de distâncias para melhor compreensão do que o greedy shortest first faz*/    
-/*/
-    printf("\nImprimindo a matriz de distâncias \n");
-    printf("|tt |   dist   ||tt |   dist   ||tt |   dist   |\n");
-    for (int a = 0; a < nb_towns; a++)
-    {
-        for (int b = 0; b < nb_towns; b++)
-        {
-            printf(" %d   %.10d  ", d_matrix[a][b].to_town, d_matrix[a][b].dist );
-
-        }
-        
-        printf("\n");
-    }
-    
-    
-    printf("\nImprimindo distancias a origem \n");
-    for (int a = 0; a < nb_towns; a++)
-    {
-        printf(" %d  ", dist_to_origin[a] );
-
-        
-    }
-        printf("\n");
-
-
-    printf("\n Distância mínima é: %d\n", min_distance);
-*/
     free(x);
     free(y);
 }
