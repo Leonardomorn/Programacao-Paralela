@@ -9,6 +9,21 @@
 #include <limits.h>
 #include <math.h>
 
+/***********************
+ * Função auxiliar para medir o tempo de execução
+ ***********************/
+double timestamp(void)
+{
+    struct timespec tp;
+    clock_gettime(CLOCK_MONOTONIC_RAW, &tp);
+    return((double)(tp.tv_sec + tp.tv_nsec*1.0e-9));
+}
+
+//tempo das partes puramente sequenciais, paralelas e totais
+double ini_seq_time, final_seq_time, delta_seq_time = 0.0;
+double ini_par_time, final_par_time, delta_par_time = 0.0;
+double ini_tot_time, final_tot_time, delta_tot_time = 0.0;
+
 int min_distance;
 int nb_towns;
 
