@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <math.h>
+#include <time.h>
 
 /***********************
  * Função auxiliar para medir o tempo de execução
@@ -134,8 +135,13 @@ int run_tsp() {
     
     path = (int*) malloc(sizeof(int) * nb_towns);
     path[0] = 0;
-    
+
+    final_seq_time = timestamp();
+    delta_seq_time = final_seq_time - ini_seq_time;
+    ini_par_time = timestamp();    
     tsp (1, 0, path);
+    final_par_time = timestamp();
+    ini_seq_time = timestamp();
 
     free(path);
     for (i = 0; i < nb_towns; i++)
@@ -146,10 +152,20 @@ int run_tsp() {
 }
 
 int main (int argc, char **argv) {
+    ini_tot_time = timestamp();
+    ini_seq_time = ini_tot_time;
     int num_instances, st;
     st = scanf("%u", &num_instances);
     if (st != 1) exit(1);
     while(num_instances-- > 0)
         printf("%d\n", run_tsp());
+    
+    final_seq_time = timestamp();
+    final_tot_time = timestamp();
+    delta_seq_time = delta_seq_time + (final_seq_time-ini_seq_time);
+    delta_tot_time = final_tot_time - ini_tot_time;
+    delta_par_time = final_par_time - ini_par_time;
+
+    printf("%15f %15f %15f\n", delta_seq_time, delta_par_time, delta_tot_time);
     return 0;
 }
