@@ -1,0 +1,72 @@
+# Sequencial entrada 15
+
+Média da sequência (seq): 0.0009663499999999998, Desvio Padrão: 0.0029752202821808
+Média do par (par): 53.104465749999996, Desvio Padrão: 0.035542405454435454
+Média total (tot): 53.10543235, Desvio Padrão: 0.03541963638615648
+
+# Sequencial entrada 16
+
+Média da sequência (seq): 0.00094855, Desvio Padrão: 0.002840763638090998
+Média do par (par): 116.64518065, Desvio Padrão: 0.11995805471633653
+Média total (tot): 116.64612930000003, Desvio Padrão: 0.1222797308408478
+
+# Sequencial entrada 17
+
+Média da sequência (seq): 0.00033165, Desvio Padrão: 0.00012876267898735252
+Média do par (par): 264.95258145, Desvio Padrão: 0.15912477674971945
+Média total (tot): 264.95291345, Desvio Padrão: 0.15910902283355483
+
+# Paralelo 1 thread entrada 15
+
+Média da sequência (seq): 0.0001191, Desvio Padrão: 1.6813387523042464e-05
+Média do par (par): 36.1416844, Desvio Padrão: 0.028976777117892344
+Média total (tot): 36.141803749999994, Desvio Padrão: 0.028965089592257198
+
+# Paralelo 1 thread entrada 16
+
+Média da sequência (seq): 0.0001256, Desvio Padrão: 1.9316832038406295e-05
+Média do par (par): 74.86792335, Desvio Padrão: 0.0711455404661998
+Média total (tot): 74.86804935, Desvio Padrão: 0.071145955503649
+
+# Paralelo 1 thread entrada 17
+
+Média da sequência (seq): 0.00012984999999999998, Desvio Padrão: 2.486418106433429e-05
+Média do par (par): 165.95468175000002, Desvio Padrão: 0.09052554821920361
+Média total (tot): 165.954812, Desvio Padrão: 0.09051735115048538
+
+# Paralelo 2 threads entrada 15
+
+Média da sequência (seq): 0.00012124999999999998, Desvio Padrão: 2.085635394789799e-05
+Média do par (par): 36.15520935, Desvio Padrão: 0.04067657545476834
+Média total (tot): 36.15533075, Desvio Padrão: 0.04066157550916555
+
+# Paralelo 2 threads entrada 16
+
+Média da sequência (seq): 0.00012704999999999997, Desvio Padrão: 1.7956823215702714e-05
+Média do par (par): 74.88220795000001, Desvio Padrão: 0.060365617806394566
+Média total (tot): 74.8823353, Desvio Padrão: 0.06035685311967478
+
+# Paralelo 2 threads entrada 17
+
+Média da sequência (seq): 0.00013155, Desvio Padrão: 1.8717571957922322e-05
+Média do par (par): 165.9685832, Desvio Padrão: 0.07587565008789182
+Média total (tot): 165.9687152, Desvio Padrão: 0.07587547632444
+
+# Paralelo 4 threads entrada 15
+
+Média da sequência (seq): 0.00012065, Desvio Padrão: 1.5156764166536339e-05
+Média do par (par): 29.46284915, Desvio Padrão: 0.8537036320523228
+Média total (tot): 29.462970049999996, Desvio Padrão: 0.8537094768004788
+
+# Paralelo 4 threads entrada 16
+
+Média da sequência (seq): 0.00012705, Desvio Padrão: 1.607008089587604e-05
+Média do par (par): 52.94888105, Desvio Padrão: 0.8729846235647842
+Média total (tot): 52.94900835, Desvio Padrão: 0.8729872975164796
+
+# Paralelo 4 threads entrada 17
+
+Média da sequência (seq): 0.00012795000000000002, Desvio Padrão: 2.3726514704018372e-05
+Média do par (par): 141.495082, Desvio Padrão: 1.8325160089516577
+Média total (tot): 141.49521035, Desvio Padrão: 1.8325205875277748
+

@@ -1,0 +1,5 @@
+# Sequencial entrada 15
+
+Média da sequência (seq): 0.0009663499999999998, Desvio Padrão: 0.0029752202821808
+Média do par (par): 53.104465749999996, Desvio Padrão: 0.035542405454435454
+Média total (tot): 53.10543235, Desvio Padrão: 0.03541963638615648

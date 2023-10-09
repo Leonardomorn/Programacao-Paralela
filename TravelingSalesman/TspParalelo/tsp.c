@@ -67,7 +67,7 @@ void tsp (int depth, int current_length, int *path) {
         
         if(depth < 2 )
         {
-            #pragma omp parallel for num_threads(1) firstprivate (depth, current_length) private(dist, town, me)
+            #pragma omp parallel for schedule(dynamic) firstprivate (depth, current_length) private(dist, town, me)
             for (int i = 0; i < nb_towns; i++)
             {
                 int *path_aux = (int*) malloc(sizeof(int) * nb_towns);
