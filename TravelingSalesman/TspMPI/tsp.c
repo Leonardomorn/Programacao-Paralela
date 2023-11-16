@@ -29,7 +29,6 @@ int present (int town, int depth, int *path) {
 }
 
 void tsp (int depth, int current_length, int *path, int my_rank, int n_proc) {
-    int my_rank, n_proc;
     MPI_Status status;
 
 
@@ -126,21 +125,46 @@ void init_tsp() {
     free(y);
 }
 
-int run_tsp() 
+
+void get_input(int my_rank, int n_proc, int *path, MPI_Status status)
+{
+
+    MPI_Bcast(&min_distance, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+    for (int i = 1; i < n_proc; i++) {
+    printf("Processo %d: %s \n", status.MPI_SOURCE, min_distance);
+    }
+    
+    printf("sou o processo %d e a min_distance é: %d \n", my_rank, min_distance);
+    MPI_Bcast(&nb_towns, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(dist_to_origin, nb_towns, MPI_INT,0, MPI_COMM_WORLD);
+    if(my_rank != 0)
+    {
+        MPI_Alloc_mem(sizeof(int) * nb_towns, MPI_INFO_NULL, path);
+    }
+    MPI_Bcast(path, nb_towns, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(d_matrix, 2, MPI_INT, 0, MPI_COMM_WORLD );
+
+
+}
+
+int run_tsp(int *argc, char ***argv) 
 {
     int i, *path;
+    MPI_Status status;
 
     init_tsp();
     
     path = (int*) malloc(sizeof(int) * nb_towns);
     path[0] = 0;
     
-    MPI_Init(&argc, &argv);
-    get_inpput();
+    min_distance = 10;
+    MPI_Init(argc, argv);
     int my_rank, n_proc;
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     MPI_Comm_size(MPI_COMM_WORLD, &n_proc);
-    tsp (1, 0, path);
+    get_input(my_rank, n_proc, path, status);
+    tsp (1, 0, path, my_rank, n_proc);
     MPI_Finalize();
 
     free(path);
@@ -156,6 +180,6 @@ int main (int argc, char **argv) {
     st = scanf("%u", &num_instances);
     if (st != 1) exit(1);
     while(num_instances-- > 0)
-        printf("%d\n", run_tsp());
+        printf("distancia encontrada %d\n", run_tsp(&argc, &argv));
     return 0;
 }
