@@ -1,0 +1,41 @@
+Distancia Tempo
+processo 0 : 1 instancias 
+entrei no run_tsp
+processo 0 nb_towns:15 
+processo 0 : x : 140 70 180 5 41 40 196 112 50 104 24 70 88 72 16 
+processo 2 : 1 instancias 
+processo 3 : 1 instancias 
+entrei no run_tsp
+entrei no run_tsp
+processo 2 nb_towns:15 
+processo 3 nb_towns:15 
+processo 1 : 1 instancias 
+entrei no run_tsp
+processo 1 nb_towns:15 
+processo 1 : x : 140 70 180 5 41 40 196 112 50 104 24 70 88 72 16 
+processo 2 : x : 140 70 180 5 41 40 196 112 50 104 24 70 88 72 16 
+processo 3 : x : 140 70 180 5 41 40 196 112 50 104 24 70 88 72 16 
+745       62.414812
+      62.415460
+      62.418555
+      62.418880
+processo 0 : 1 instancias 
+entrei no run_tsp
+processo 0 nb_towns:15 
+processo 0 : x : 140 70 180 5 41 40 196 112 50 104 24 70 88 72 16 
+processo 2 : 1 instancias 
+entrei no run_tsp
+processo 2 nb_towns:15 
+processo 3 : 1 instancias 
+entrei no run_tsp
+processo 3 nb_towns:15 
+processo 1 : 1 instancias 
+entrei no run_tsp
+processo 1 nb_towns:15 
+processo 1 : x : 140 70 180 5 41 40 196 112 50 104 24 70 88 72 16 
+processo 2 : x : 140 70 180 5 41 40 196 112 50 104 24 70 88 72 16 
+processo 3 : x : 140 70 180 5 41 40 196 112 50 104 24 70 88 72 16 
+745       65.265129
+      65.259530
+      65.260745
+      65.264981
