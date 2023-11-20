@@ -2,12 +2,12 @@ import subprocess
 import time
 
 # Abra um arquivo para escrever a saída concatenada
-with open('saida_paralela_1threads17.txt', 'w') as output_file:
+with open('saida_paralela_2threads15.txt', 'w') as output_file:
     output_file.write("Distancia Tempo\n")
     # Itere 20 vezes
-    for i in range(2):
+    for i in range(20):
         # Execute o programa C
-        process = subprocess.Popen(["mpirun", "--hostfile", "hosts.txt", "-n", "4", "./tsp"], stdin=open("entrada15", "r"), stdout=subprocess.PIPE, text=True)
+        process = subprocess.Popen(["mpirun", "--hostfile", "hosts.txt", "-np", "2", "./tsp"], stdin=open("entrada16", "r"), stdout=subprocess.PIPE, text=True)
         
         # Obtenha a saída
         output, _ = process.communicate()

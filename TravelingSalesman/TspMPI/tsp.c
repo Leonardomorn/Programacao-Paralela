@@ -46,47 +46,71 @@ void tsp (int depth, int current_length, int *path, unsigned int reductcounter, 
     if (depth == nb_towns) 
     {
         current_length += dist_to_origin[path[nb_towns - 1]];
+        //print debug
+        /**
+         * 
+        if(my_rank == 0)
+        {
+            printf(" processo %d percorreu o caminho: ", my_rank);
+            for (int a = 0; a < nb_towns; a++)
+            {
+                printf("%d ", path[a]);
+            }
+            printf("\n");       
+        } 
+        */
+
         if (current_length < min_distance)
         {
             min_distance = current_length;
-            if (reductcounter >= 80000 || first_leaf == 1)
+            if ( reductcounter > 80000)
             {
                 MPI_Allreduce(&min_distance, &local_min_distance, 1, MPI_INT, MPI_MIN, MPI_COMM_WORLD);
                 min_distance = local_min_distance; 
-                first_leaf = 0;
-                reductcounter = 0;
             }
-        }
+                    
+        }            
+            
     }
-    else 
+    else if (depth == 1)
     {
         int town, me, dist;
         me = path[depth - 1];
-        if (depth == 1)
+        for (i = my_rank; i < nb_towns; i = i + n_procs) 
         {
-            for (i = my_rank; i < nb_towns; i = i + n_procs) 
-            {
-                town = d_matrix[me][i].to_town;
-                if (!present (town, depth, path)) {
-                    path[depth] = town;
-                    dist = d_matrix[me][i].dist;
-                    tsp (depth + 1, current_length + dist, path, reductcounter, my_rank, n_procs, first_leaf);
-                }
-            }        
-        }
-        else
+            town = d_matrix[me][i].to_town;
+            if (!present (town, depth, path)) {
+                path[depth] = town;
+                //print debug
+                // printf("processo %d : nova cidade escolhida: path = ", my_rank);
+                // for (int a = 0; a < nb_towns; a++)
+                // {
+                //     printf("%d ", path[a]);
+                // }
+                
+
+                dist = d_matrix[me][i].dist;
+                // printf("Processo %d colocou cidade %d na profundidade 1\n", my_rank, town);
+                tsp (depth + 1, current_length + dist, path, reductcounter, my_rank, n_procs, first_leaf);
+            }
+        }        
+
+
+    }
+    else
+    {
+        int town, me, dist;
+        me = path[depth - 1];
+
+        for (i = 0; i < nb_towns; i++) 
         {
-            for (i = 0; i < nb_towns; i++) 
-            {
-                town = d_matrix[me][i].to_town;
-                if (!present (town, depth, path)) {
-                    path[depth] = town;
-                    dist = d_matrix[me][i].dist;
-                    tsp (depth + 1, current_length + dist, path, reductcounter, my_rank, n_procs, first_leaf);
-                }
+            town = d_matrix[me][i].to_town;
+            if (!present (town, depth, path)) {
+                path[depth] = town;
+                dist = d_matrix[me][i].dist;
+                tsp (depth + 1, current_length + dist, path, reductcounter, my_rank, n_procs, first_leaf);
             }
         }
-
     }
     
 }
@@ -139,9 +163,7 @@ void init_tsp(int my_rank, int n_procs) {
     if (st != 1) exit(1);
     }
     MPI_Bcast(&nb_towns, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    /*********Test de input*/
 
-    // printf("processo %d nb_towns:%d \n", my_rank, nb_towns);
  
     
     d_matrix = (d_info**) malloc (sizeof(d_info*) * nb_towns);
@@ -164,58 +186,6 @@ void init_tsp(int my_rank, int n_procs) {
 
     MPI_Bcast(x, nb_towns, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(y, nb_towns, MPI_INT, 0, MPI_COMM_WORLD);
-    
-/*********Test de input*/
-
-    if(my_rank == 0)
-    {
-        printf("processo %d : x : ", my_rank);
-        for (int i = 0; i < nb_towns; i++)
-        {
-            printf("%d ", x[i]);
-        }
-        printf("\n"); 
-    }
-    else 
-    {
-        sleep(1);
-        if(my_rank == 1)
-        {   
-            printf("processo %d : x : ", my_rank);
-            for (int i = 0; i < nb_towns; i++)
-            {
-                printf("%d ", x[i]);
-            }
-            printf("\n"); 
-        }
-        else
-        {
-            sleep(1);
-            if(my_rank == 2)
-            {   
-                printf("processo %d : x : ", my_rank);
-                for (int i = 0; i < nb_towns; i++)
-                {
-                    printf("%d ", x[i]);
-                }
-                printf("\n"); 
-            } 
-            else
-            {
-                sleep(1);
-                if(my_rank == 3)
-                {   
-                    printf("processo %d : x : ", my_rank);
-                    for (int i = 0; i < nb_towns; i++)
-                    {
-                        printf("%d ", x[i]);
-                    }
-                    printf("\n"); 
-                }                
-            }           
-        }      
-
-    }
     
     greedy_shortest_first_heuristic(x, y);
     
@@ -266,12 +236,10 @@ int main (int argc, char **argv) {
 
     MPI_Bcast(&num_instances, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
-/*********Test de input*/
-    printf("processo %d : %d instancias \n", my_rank, num_instances);
+
 
     while(num_instances-- > 0)
     {
-        printf("entrei no run_tsp\n");
         int dis_min = run_tsp(my_rank, n_procs);
         if (my_rank == 0)
         {
@@ -281,7 +249,6 @@ int main (int argc, char **argv) {
             printf("%15f\n", delta_time);
         }
     }
-        // printf("distancia minima: %d\n", run_tsp(my_rank, n_procs));
         
     MPI_Finalize();
 
